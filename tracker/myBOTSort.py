@@ -22,14 +22,14 @@ from os.path import exists as file_exists, join
 class STrack(BaseTrack):
     shared_kalman = KalmanFilter()
 
-    def __init__(self, tlwh, score, feat=None, feat_history=50):
+    def __init__(self, tlwh, score,additional_data = None, feat=None, feat_history=50):
 
         # wait activate
         self._tlwh = np.asarray(tlwh, dtype=np.float)
         self.kalman_filter = None
         self.mean, self.covariance = None, None
         self.is_activated = False
-
+        self.data = additional_data
         self.score = score
         self.tracklet_len = 0
 
@@ -279,29 +279,34 @@ class BoTSORT(object):
                 bboxes = output_results[:, :4]
                 classes = output_results[:, -1]
             else:
-                scores = output_results[:, 4] * output_results[:, 5]
+                scores = output_results[:, 4] #* output_results[:, 5]
                 bboxes = output_results[:, :4]  # x1y1x2y2
-                classes = output_results[:, -1]
+                classes = output_results[:, 5]
+                data = output_results[:,5:] #additional data
 
             # Remove bad detections
             lowest_inds = scores > self.track_low_thresh
             bboxes = bboxes[lowest_inds]
             scores = scores[lowest_inds]
             classes = classes[lowest_inds]
+            data = data[lowest_inds]
 
             # Find high threshold detections
             remain_inds = scores > self.args.track_high_thresh
             dets = bboxes[remain_inds]
             scores_keep = scores[remain_inds]
             classes_keep = classes[remain_inds]
+            data_keep = data[remain_inds]
 
         else:
             bboxes = []
             scores = []
             classes = []
+            data = []
             dets = []
             scores_keep = []
             classes_keep = []
+            data_keep = []
 
         '''Extract embeddings '''
         # if self.args.with_reid:
@@ -313,11 +318,11 @@ class BoTSORT(object):
         if len(dets) > 0:
             '''Detections'''
             if self.args.with_reid:
-                detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s, f) for
-                              (tlbr, s, f) in zip(dets, scores_keep, features_keep)]
+                detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s, ad,f) for
+                              (tlbr, s,ad, f) in zip(dets, scores_keep, data_keep,features_keep)]
             else:
-                detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s) for
-                              (tlbr, s) in zip(dets, scores_keep)]
+                detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s,ad) for
+                              (tlbr, s,ad) in zip(dets, scores_keep,data_keep)]
         else:
             detections = []
 
