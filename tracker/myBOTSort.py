@@ -262,7 +262,7 @@ class BoTSORT(object):
             im = ori_img[y1:y2, x1:x2]
             im_crops.append(im)
         if im_crops:
-            features = self.extractor(im_crops).cpu()
+            features = self.extractor(im_crops).cpu().numpy()
         else:
             features = np.array([])
         return features
