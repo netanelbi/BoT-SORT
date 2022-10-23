@@ -136,7 +136,7 @@ class STrack(BaseTrack):
         if new_track.curr_feat is not None:
             self.update_features(new_track.curr_feat)
         # if new_track.data is not None:
-        self.data(new_track.data)
+        self.data=new_track.data
 
         self.state = TrackState.Tracked
         self.is_activated = True
