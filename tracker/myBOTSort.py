@@ -134,6 +134,8 @@ class STrack(BaseTrack):
 
         if new_track.curr_feat is not None:
             self.update_features(new_track.curr_feat)
+        # if new_track.data is not None:
+        self.data(new_track.data)
 
         self.state = TrackState.Tracked
         self.is_activated = True
@@ -391,16 +393,18 @@ class BoTSORT(object):
             dets_second = bboxes[inds_second]
             scores_second = scores[inds_second]
             classes_second = classes[inds_second]
+            data_second = data[inds_second]
         else:
             dets_second = []
             scores_second = []
             classes_second = []
+            data_second = []
 
         # association the untrack to the low score detections
         if len(dets_second) > 0:
             '''Detections'''
             detections_second = [STrack(STrack.tlbr_to_tlwh(tlbr), s) for
-                                 (tlbr, s) in zip(dets_second, scores_second)]
+                                 (tlbr, s) in zip(dets_second, scores_second,data_second)]
         else:
             detections_second = []
 
