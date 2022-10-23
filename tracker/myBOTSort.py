@@ -109,6 +109,7 @@ class STrack(BaseTrack):
         self.mean, self.covariance = self.kalman_filter.update(self.mean, self.covariance, self.tlwh_to_xywh(new_track.tlwh))
         if new_track.curr_feat is not None:
             self.update_features(new_track.curr_feat)
+        self.data = new_track.data
         self.tracklet_len = 0
         self.state = TrackState.Tracked
         self.is_activated = True
