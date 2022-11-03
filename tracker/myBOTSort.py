@@ -404,10 +404,11 @@ class BoTSORT(object):
         # association the untrack to the low score detections
         if len(dets_second) > 0:
             '''Detections'''
-            detections_second = [STrack(STrack.tlbr_to_tlwh(tlbr), s) for
-                                 (tlbr, s) in zip(dets_second, scores_second,data_second)]
+            detections_second = [STrack(STrack.tlbr_to_tlwh(tlbr), s,ad) for
+                                 (tlbr, s,ad) in zip(dets_second, scores_second,data_second)]
         else:
             detections_second = []
+
 
         r_tracked_stracks = [strack_pool[i] for i in u_track if strack_pool[i].state == TrackState.Tracked]
         dists = matching.iou_distance(r_tracked_stracks, detections_second)
